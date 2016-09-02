@@ -1,11 +1,25 @@
 {
   "name": "simple-multer",
   "version": "0.0.1",
-  "description": "上传项目",
+  "description": "上传框架，参考（基本临摹multer框架）",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "toonew",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "busboy": "^0.2.13",
+    "mkdirp": "^0.5.1",
+    "qs": "^6.2.1",
+    "type-is": "^1.6.13"
+  },
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "co": "^3.0.6",
+    "express": "*",
+    "mocha": "*",
+    "rimraf": "^2.2.8",
+    "supertest": "^0.13.0"
+  }
 }
