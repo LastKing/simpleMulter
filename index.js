@@ -157,10 +157,11 @@ module.exports = function (options) {
           onFinish();
         }
 
+        //根据内存模式启动不同的流操作
         if (options.inMemory)
-          fileStream.on('end', onFileStreamEnd);
+          fileStream.on('end', onFileStreamEnd);//可读流 end
         else
-          ws.on('finish', onFileStreamEnd);
+          ws.on('finish', onFileStreamEnd); //写入流 finish
 
         fileStream.on('error', function (error) {
           // trigger "file error" event
