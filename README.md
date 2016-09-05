@@ -114,16 +114,54 @@ limits: {
 
 指定这些limits 能够帮助我们保护网站抵制  denial of service (DoS) attacks.
 
+###includeEmptyFields
+
+这个参数 决定是否让空的字段值 赋值到req.body上。默认为false
+```js
+includeEmptyFields: true
+```
+
+###putSingleFilesInArray
+
+`putStringFilesInArray`默认值是false.
+
+```js
+    putSingleFilesInArray: true
+```
+
+一些applications 或者 libraries，例如 Object models,期待 `req.files` 键值对总是指向数组。如果设置为true，multer将会确保所有的值指向同一个数组。
+
+```js
+// the value points to a single file object
+req.files['file1'] = [fileObject1]
+// the value points to an array of file objects
+req.files['file1'] = [fileObject1, fileObject2]
+```
+
+相比 multer 的默认putStringFilesArray 是false。如果`req.files`任意键的值是一个单一的文件，让后这个值等同一个一文件对象。如果这个value指向
+复数文件，这个value等于一个数组文件objects
+
+```js
+// the value points to a single file object
+req.files['file1'] = fileObject1
+// the value points to an array of file objects
+req.files['file1'] = [fileObject1, fileObject2]
+```
+
+###inMemory
+如果这个boolean值为true，multer将要写入磁盘的数据保存在`file.buffer`属性上。
+这个 dest 选项仍然可以设置，而且path属性包含了推荐文件保存路径（The dest option is still populated and the path property contains the proposed path to save the file.）
+默认值`false`
+
+```js
+inMemory: true
+```
+
+**警告：** 如果`inMemory` 设定是`true`的话，在上传非常大的文件好，或者大量较小文件时，可能会使我们的内存消耗殆尽。
 
 
-
-
-
-
-
-
-
-
+###rename(fieldname,filename,req,res)
+这个函数用来重命名上传的文件名，返回的返回值作为文件的新名字（不包含拓展名）.这个`fieldname` 和 `filename` 的文件
 
 
 
