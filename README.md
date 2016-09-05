@@ -36,16 +36,16 @@ console.log(req.files)
 
 一个 multer文件对象是一个包含一下属性的文件对象：
 
-1.`fieldname` - 在表单中的字段名
-2.`originalname` - 用户计算机上的文件名
-3.`name` - 重命名文件名
-4.`encoding` - 文件编码类型
-5.`mimetype` - 描述文件类型
-6.`path` - 本地文件上传的位置
-7.`extension` - 文件的拓展
-8.`size` - 文件的尺寸
-9.`truncated` - 如果限制文件超过限制，将被截断
-10.`buffer` - Raw data (是一个空的，除非 inMemory 参数 是真的）
+1. `fieldname` - 在表单中的字段名
+2. `originalname` - 用户计算机上的文件名
+3. `name` - 重命名文件名
+4. `encoding` - 文件编码类型
+5. `mimetype` - 描述文件类型
+6. `path` - 本地文件上传的位置
+7. `extension` - 文件的拓展
+8. `size` - 文件的尺寸
+9. `truncated` - 如果限制文件超过限制，将被截断
+10. `buffer` - Raw data (是一个空的，除非 inMemory 参数 是真的）
 
 ##options
 multer 接受一个可选对象，最基本的选项`dest` ，告诉multer上传到哪里。如果你没有填写这个参数，文件将重命名并且上传到系统临时文件夹。
