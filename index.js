@@ -87,8 +87,7 @@ module.exports = function (options) {
 
         if (filename.indexOf('.') > 0) {
           ext = '.' + filename.split('.').slice(-1)[0];
-        }
-        else {
+        } else {
           ext = '';
         }
 
