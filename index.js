@@ -74,23 +74,25 @@ module.exports = function (options) {
         }
       });
 
-      // 解析post表但中的文件
+      // 解析post表单中的文件（字段名，流，文件名，格式，类型）
       busboy.on('file', function (fieldname, fileStream, filename, encoding, mimetype) {
-
+        //拓展名，文件名，文件路径
         var ext, newFilename, newFilePath;
 
         // 如果没有文件名，就不附加文件对象
         if (!filename) return fileStream.resume();
 
-        // 定义正在处理的新文件
+        // 定义正在处理的新文件分片数量
         fileCount++;
 
+        //截取文件的拓展名
         if (filename.indexOf('.') > 0) {
           ext = '.' + filename.split('.').slice(-1)[0];
         } else {
           ext = '';
         }
 
+        //重名文件名（name+ext） 和上传的路径（dest+newFileName）
         newFilename = rename(fieldname, filename.replace(ext, ''), req, res) + ext;
         newFilePath = path.join(changeDest(dest, req, res), newFilename);
 
@@ -107,7 +109,7 @@ module.exports = function (options) {
           buffer: null
         };
 
-        // trigger "file upload start" event
+        // 文件开始上传时触发
         if (options.onFileUploadStart) {
           var proceed = options.onFileUploadStart(file, req, res);
           // if the onFileUploadStart handler returned null, it means we should proceed further, discard the file!
@@ -120,7 +122,7 @@ module.exports = function (options) {
         var bufs = [];
         var ws;
 
-        //如果不是内存存储，创建输出流
+        //如果不是内存存储，根据filePath创建输出流
         if (!options.inMemory) {
           ws = fs.createWriteStream(newFilePath);
           fileStream.pipe(ws);
@@ -131,7 +133,7 @@ module.exports = function (options) {
             if (options.inMemory) bufs.push(data);
             file.size += data.length;
           }
-          // trigger "file data" event
+          //上传数据时触发（）
           if (options.onFileUploadData) {
             options.onFileUploadData(file, data, req, res);
           }
