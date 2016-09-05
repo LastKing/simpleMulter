@@ -16,11 +16,11 @@ simple-multer 是一个node.js 中间件 处理上传 multipart/form-data.
 ###使用
 
 ```js
-    var express = require('express')
-    var multer  = require('multer')
-    
-    var app = express()
-    app.use(multer({ dest: './uploads/'}))
+var express = require('express')
+var multer  = require('multer')
+
+var app = express()
+app.use(multer({ dest: './uploads/'}))
 ```
 
 你能获得这些字段和文件
@@ -126,7 +126,7 @@ includeEmptyFields: true
 `putStringFilesInArray`默认值是false.
 
 ```js
-    putSingleFilesInArray: true
+putSingleFilesInArray: true
 ```
 
 一些applications 或者 libraries，例如 Object models,期待 `req.files` 键值对总是指向数组。如果设置为true，multer将会确保所有的值指向同一个数组。
@@ -159,19 +159,155 @@ inMemory: true
 
 **警告：** 如果`inMemory` 设定是`true`的话，在上传非常大的文件好，或者大量较小文件时，可能会使我们的内存消耗殆尽。
 
-
 ###rename(fieldname,filename,req,res)
 这个函数用来重命名上传的文件名，返回的返回值作为文件的新名字（不包含拓展名）.这个`fieldname` 和 `filename` 的文件
 
+```js
+rename: function (fieldname, filename, req, res) {
+  return fieldname + filename + Date.now()
+}
+```
+注意： [req.body Warnings](#reqbody-warnings) applies to this function 
 
+### renameDestDir(dest, req, res)
+
+Function to rename the directory in which to place uploaded files. The `dest` parameter is the default value originally assigned or passed into multer. The `req` and `res` are also passed into the function because they may contain information (eg session data) needed to create the path (eg get userid from the session).
+
+```js
+renameDestDir: function(dest, req, res) {
+  return dest + '/user1'  
+}
+```
+
+Note that [req.body Warnings](#reqbody-warnings) applies to this function.
+
+### onFileUploadStart(file, req, res)
+
+Event handler triggered when a file starts to be uploaded. A file object with the following properties are available to this function: `fieldname`, `originalname`, `name`, `encoding`, `mimetype`, `path`, `extension`.
+
+```js
+onFileUploadStart: function (file, req, res) {
+  console.log(file.fieldname + ' is starting ...')
+}
+```
+
+You can even stop a file from being uploaded - just return `false` from the event handler. The file won't be processed or reach the file system.
+
+```js
+onFileUploadStart: function (file, req, res) {
+  if (file.originalname == 'virus.exe') return false;
+}
+```
+
+Note that [req.body Warnings](#reqbody-warnings) applies to this function.
+
+### onFileUploadData(file, data, req, res)
+
+Event handler triggered when a chunk of buffer is received. A buffer object along with a file object is available to the function.
+
+```js
+onFileUploadData: function (file, data, req, res) {
+  console.log(data.length + ' of ' + file.fieldname + ' arrived')
+}
+```
+
+Note that [req.body Warnings](#reqbody-warnings) applies to this function.
+
+### onFileUploadComplete(file, req, res)
+
+Event handler trigger when a file is completely uploaded. A file object is available to the function.
+
+```js
+onFileUploadComplete: function (file, req, res) {
+  console.log(file.fieldname + ' uploaded to  ' + file.path)
+}
+```
+
+Note that [req.body Warnings](#reqbody-warnings) applies to this function.
+
+### onParseStart()
+
+Event handler triggered when the form parsing starts.
+
+```js
+onParseStart: function () {
+  console.log('Form parsing started at: ', new Date())
+}
+```
+
+### onParseEnd(req, next)
+
+Event handler triggered when the form parsing completes. The `request` object and the `next` objects are are passed to the function.
+
+```js
+onParseEnd: function (req, next) {
+  console.log('Form parsing completed at: ', new Date());
+
+  // usage example: custom body parse
+  req.body = require('qs').parse(req.body);
+
+  // call the next middleware
+  next();
+}
+```
+
+**Note**: If you have created a `onParseEnd` event listener, you must manually call the `next()` function, else the request will be left hanging.
+
+### onError()
+
+Event handler for any errors encountering while processing the form. The `error` object and the `next` object is available to the function. If you are handling errors yourself, make sure to terminate the request or call the `next()` function, else the request will be left hanging.
+
+```js
+onError: function (error, next) {
+  console.log(error)
+  next(error)
+}
+```
+
+### onFileSizeLimit()
+
+Event handler triggered when a file size exceeds the specification in the `limit` object. No more files will be parsed after the limit is reached.
+
+```js
+onFileSizeLimit: function (file) {
+  console.log('Failed: ', file.originalname)
+  fs.unlink('./' + file.path) // delete the partially written file
+}
+```
+
+### onFilesLimit()
+
+Event handler triggered when the number of files exceed the specification in the `limit` object. No more files will be parsed after the limit is reached.
+
+```js
+onFilesLimit: function () {
+  console.log('Crossed file limit!')
+}
+```
+
+### onFieldsLimit()
+
+Event handler triggered when the number of fields exceed the specification in the `limit` object. No more fields will be parsed after the limit is reached.
+
+```js
+onFieldsLimit: function () {
+  console.log('Crossed fields limit!')
+}
+```
+
+### onPartsLimit()
+
+Event handler triggered when the number of parts exceed the specification in the `limit` object. No more files or fields will be parsed after the limit is reached.
+
+```js
+onPartsLimit: function () {
+  console.log('Crossed parts limit!')
+}
+```
 
 ##req.body Warnings
 
 **警告：** `req.body` 在文件上传之后 完整解析。过早的访问`req.boy`会发生很多错误。`req`和`res`参数被增加到一些functions中，方便程序猿访问。
  例如 session 变量 或者 socket.io 对象。
-
-
-
-
 
 
