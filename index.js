@@ -128,10 +128,11 @@ module.exports = function (options) {
           fileStream.pipe(ws);
         }
 
+        //给可读流添加一个读取监听事件(可以添加多个监听时间）
         fileStream.on('data', function (data) {
           if (data) {
-            if (options.inMemory) bufs.push(data);
-            file.size += data.length;
+            if (options.inMemory) bufs.push(data);//如果是内存操作，向内存中写入
+            file.size += data.length;//统计当前上传大小
           }
           //上传数据时触发（）
           if (options.onFileUploadData) {
@@ -144,7 +145,7 @@ module.exports = function (options) {
           if (!req.files[fieldname]) {
             req.files[fieldname] = [];
           }
-          if (options.inMemory) file.buffer = Buffer.concat(bufs, file.size);
+          if (options.inMemory) file.buffer = Buffer.concat(bufs, file.size);//如果是内存模式，给对应字段一个buffer字段，用于流操作
           req.files[fieldname].push(file);
 
           // trigger "file end" event
@@ -163,17 +164,18 @@ module.exports = function (options) {
         else
           ws.on('finish', onFileStreamEnd); //写入流 finish
 
+        fileStream.on('limit', function () {
+          if (options.onFileSizeLimit) {
+            options.onFileSizeLimit(file);
+          }
+        });
+
         fileStream.on('error', function (error) {
           // trigger "file error" event
           if (options.onError) {
             options.onError(error, next);
-          }
-          else next(error);
-        });
-
-        fileStream.on('limit', function () {
-          if (options.onFileSizeLimit) {
-            options.onFileSizeLimit(file);
+          } else {
+            next(error);
           }
         });
 
