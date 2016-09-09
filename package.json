@@ -1,6 +1,6 @@
 {
   "name": "simple-multer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "上传框架，参考（基本临摹multer框架）",
   "main": "index.js",
   "scripts": {
